@@ -4,7 +4,7 @@ library(raster)
 library(scales)
 library(rgdal)
 
-elevation <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\cdng46e_v3r1\\DEM.tif")
+elevation <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\cdng46e_v3r1\\DEM_prj.tif")
 
 height_shade(raster_to_matrix(elevation)) %>%
   plot_map()
@@ -18,3 +18,37 @@ plotRGB(assam_rgb,
         scale=800,
         stretch = "lin")
 
+#check projection
+raster::crs(elevation)
+raster::crs(assam_rgb)
+
+#Assam raster reproject
+assam_rgb_utm = raster::projectRaster(assam_rgb, crs = crs(elevation), method = "bilinear")
+crs(assam_rgb_utm)
+
+names(assam_rgb_utm) = c("r","g","b")
+
+assam_r_utm = rayshader::raster_to_matrix(assam_rgb_utm$r)
+assam_g_utm = rayshader::raster_to_matrix(assam_rgb_utm$g)
+assam_b_utm = rayshader::raster_to_matrix(assam_rgb_utm$b)
+
+assamel_matrix = rayshader::raster_to_matrix(elevation)
+
+assam_rgb_array = array(0,dim=c(nrow(assam_r_utm),ncol(assam_r_utm),3))
+
+assam_rgb_array[,,1] = assam_r_utm/255 #Red layer
+assam_rgb_array[,,2] = assam_g_utm/255 #Blue layer
+assam_rgb_array[,,3] = assam_b_utm/255 #Green layer
+
+assam_rgb_array = aperm(assam_rgb_array, c(2,1,3))
+
+plot_map(zion_rgb_array)
+
+assam_rgb_contrast = scales::rescale(assam_rgb_array,to=c(0,1))
+
+plot_map(assam_rgb_contrast)
+
+plot_3d(assam_rgb_contrast, assamel_matrix, windowsize = c(1100,900), zscale = 15, shadowdepth = -50,
+        zoom=0.4, phi=30,theta=-25,fov=70, background = "#F2E1D0", shadowcolor = "#523E2B")
+render_snapshot(title_text = "Assam, Subansiri river | Imagery: LISS 3 | DEM: 30m Cartodem",
+                title_bar_color = "#1f5214", title_color = "white", title_bar_alpha = 1)
