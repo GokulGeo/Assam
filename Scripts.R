@@ -8,10 +8,17 @@ elevation <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\cdng46e
 
 height_shade(raster_to_matrix(elevation)) %>%
   plot_map()
-assam_r <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND4.tif")
-assam_g <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND3.tif")
-assam_b <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND2.tif")
 
+#assam_r <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND4.tif")
+#assam_g <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND3.tif")
+#assam_b <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND2.tif")
+
+assam_r <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND3.tif")
+assam_g <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\l3g46e0605nov14\\L3-NG46E06-112-052-05Nov14-BAND2.tif")
+
+assam_b <- raster("C:\\Users\\Lenovo\\Desktop\\Cover\\Additional data\\Landsat\\Clipped_landsat_band2.tif")
+assam_b <- resample(assam_b,assam_r,method="ngb")
+  
 assam_rgb = raster::stack(assam_r, assam_g, assam_b)
 plotRGB(assam_rgb,
         r = 1, g = 2, b = 3, 
@@ -49,6 +56,7 @@ assam_rgb_contrast = scales::rescale(assam_rgb_array,to=c(0,1))
 plot_map(assam_rgb_contrast)
 
 plot_3d(assam_rgb_contrast, assamel_matrix, windowsize = c(1100,900), zscale = 15, shadowdepth = -50,
-        zoom=0.4, phi=30,theta=-25,fov=70, background = "#F2E1D0", shadowcolor = "#523E2B")
+        zoom=0.5, phi=25,theta=-25,fov=70, background = "#F2E1D0", shadowcolor = "#523E2B")
 render_snapshot(title_text = "Assam, Subansiri river | Imagery: LISS 3 | DEM: 30m Cartodem",
                 title_bar_color = "#1f5214", title_color = "white", title_bar_alpha = 1)
+
